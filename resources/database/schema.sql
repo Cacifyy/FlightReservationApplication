@@ -1,4 +1,5 @@
 -- Create database
+-- DROP DATABASE IF EXISTS flight_reservation_db; -- Uncomment this line to reset the database
 CREATE DATABASE IF NOT EXISTS flight_reservation_db;
 USE flight_reservation_db;
 
