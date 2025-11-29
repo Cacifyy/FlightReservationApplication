@@ -1,6 +1,8 @@
 package presentation.views;
 
 import business.controllers.LoginController;
+import data.dao.CustomerDAO;
+import presentation.views.ViewFactory;
 import javax.swing.*;
 import java.awt.*;
 
@@ -148,9 +150,24 @@ public class LoginFrame extends JFrame {
     }
 
     private void openMainFrame(String username, String role) {
-        // SwingUtilities.invokeLater(() -> {
-        // MainFrame mainFrame = new MainFrame(username, role);
-        // mainFrame.setVisible(true);
-        // });
+        SwingUtilities.invokeLater(() -> {
+            // Create a simple main window that hosts role-specific views produced by the ViewFactory
+            JFrame mainFrame = new JFrame("Flight Reservation - " + username + " (" + role + ")");
+            mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            mainFrame.setSize(900, 600);
+            mainFrame.setLocationRelativeTo(null);
+
+            // Determine customer id if needed
+            Integer customerId = null;
+            if ("CUSTOMER".equalsIgnoreCase(role)) {
+                CustomerDAO customerDAO = new CustomerDAO();
+                int userId = loginController.getUserId(username);
+                customerId = customerDAO.getCustomerIdByUserId(userId);
+            }
+
+            JPanel view = ViewFactory.createView(role, username, customerId);
+            mainFrame.add(view);
+            mainFrame.setVisible(true);
+        });
     }
 }
