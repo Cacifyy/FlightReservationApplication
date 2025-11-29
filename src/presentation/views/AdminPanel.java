@@ -9,12 +9,12 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 
-public class SystemAdminPanel extends JPanel {
+public class AdminPanel extends JPanel {
     private AdminController adminController;
     private DefaultTableModel flightsModel;
     private DefaultTableModel aircraftModel;
 
-    public SystemAdminPanel() {
+    public AdminPanel() {
         this.adminController = new AdminController();
         initComponents();
         loadData();

@@ -12,6 +12,8 @@ public class ViewFactory {
             case "AGENT":
             case "FLIGHT_AGENT":
                 return new AgentPanel(username);
+            case "ADMIN":
+                return new AdminPanel();
             default:
                 JPanel panel = new JPanel();
                 panel.add(new JLabel("No view implemented for role: " + role));
