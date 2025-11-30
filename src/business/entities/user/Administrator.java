@@ -6,8 +6,6 @@
 package business.entities.user;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 // Administrator entity class - extends User with admin-specific functionality
 public class Administrator extends User {
@@ -20,8 +18,6 @@ public class Administrator extends User {
     private LocalDateTime hireDate;
     private String department;
     private boolean isActive;
-    private String accessLevel; // SUPER_ADMIN, ADMIN, LIMITED_ADMIN
-    private List<String> permissions;
     private LocalDateTime lastLogin;
     private int systemChanges;
 
@@ -30,10 +26,7 @@ public class Administrator extends User {
         super();
         this.setRole("ADMIN");
         this.isActive = true;
-        this.accessLevel = "ADMIN";
-        this.permissions = new ArrayList<>();
         this.systemChanges = 0;
-        initializeDefaultPermissions();
     }
 
     public Administrator(String username, String password, String firstName, String lastName, 
@@ -46,16 +39,12 @@ public class Administrator extends User {
         this.hireDate = LocalDateTime.now();
         this.department = "IT Administration";
         this.isActive = true;
-        this.accessLevel = "ADMIN";
-        this.permissions = new ArrayList<>();
         this.systemChanges = 0;
-        initializeDefaultPermissions();
     }
 
     public Administrator(int userId, String username, String password, int adminId,
                         String firstName, String lastName, String email, String phone,
-                        String employeeId, LocalDateTime hireDate, String department,
-                        String accessLevel) {
+                        String employeeId, LocalDateTime hireDate, String department) {
         super(userId, username, password, "ADMIN");
         this.adminId = adminId;
         this.firstName = firstName;
@@ -66,32 +55,10 @@ public class Administrator extends User {
         this.hireDate = hireDate;
         this.department = department;
         this.isActive = true;
-        this.accessLevel = accessLevel != null ? accessLevel : "ADMIN";
-        this.permissions = new ArrayList<>();
         this.systemChanges = 0;
-        initializeDefaultPermissions();
     }
 
-    // Initialize default permissions based on access level
-    private void initializeDefaultPermissions() {
-        permissions.clear();
-        
-        // Basic admin permissions
-        permissions.add("VIEW_REPORTS");
-        permissions.add("MANAGE_FLIGHTS");
-        permissions.add("MANAGE_BOOKINGS");
-        
-        if ("SUPER_ADMIN".equals(accessLevel)) {
-            permissions.add("MANAGE_USERS");
-            permissions.add("SYSTEM_CONFIG");
-            permissions.add("DATABASE_ADMIN");
-            permissions.add("AUDIT_LOGS");
-        } else if ("ADMIN".equals(accessLevel)) {
-            permissions.add("MANAGE_AGENTS");
-            permissions.add("VIEW_ANALYTICS");
-        }
-        // LIMITED_ADMIN gets only basic permissions
-    }
+
 
     // Getters and Setters
     public int getAdminId() {
@@ -166,22 +133,7 @@ public class Administrator extends User {
         isActive = active;
     }
 
-    public String getAccessLevel() {
-        return accessLevel;
-    }
 
-    public void setAccessLevel(String accessLevel) {
-        this.accessLevel = accessLevel;
-        initializeDefaultPermissions(); // Reinitialize permissions when access level changes
-    }
-
-    public List<String> getPermissions() {
-        return new ArrayList<>(permissions);
-    }
-
-    public void setPermissions(List<String> permissions) {
-        this.permissions = new ArrayList<>(permissions);
-    }
 
     public LocalDateTime getLastLogin() {
         return lastLogin;
@@ -204,42 +156,8 @@ public class Administrator extends User {
         return firstName + " " + lastName;
     }
 
-    public boolean hasPermission(String permission) {
-        return permissions.contains(permission);
-    }
-
-    public void addPermission(String permission) {
-        if (!permissions.contains(permission)) {
-            permissions.add(permission);
-        }
-    }
-
-    public void removePermission(String permission) {
-        permissions.remove(permission);
-    }
-
-    public boolean canManageUsers() {
-        return hasPermission("MANAGE_USERS") && isActive;
-    }
-
-    public boolean canAccessSystemConfig() {
-        return hasPermission("SYSTEM_CONFIG") && isActive;
-    }
-
-    public boolean canViewReports() {
-        return hasPermission("VIEW_REPORTS") && isActive;
-    }
-
-    public boolean canManageFlights() {
-        return hasPermission("MANAGE_FLIGHTS") && isActive;
-    }
-
-    public boolean isSuperAdmin() {
-        return "SUPER_ADMIN".equals(accessLevel);
-    }
-
-    public boolean isLimitedAdmin() {
-        return "LIMITED_ADMIN".equals(accessLevel);
+    public boolean canManageSystem() {
+        return isActive;
     }
 
     public void recordLogin() {
@@ -268,8 +186,8 @@ public class Administrator extends User {
     }
 
     public String getAdminSummary() {
-        return String.format("Admin: %s (%s) - Level: %s, Active: %s, Permissions: %d", 
-                           getFullName(), employeeId, accessLevel, isActive, permissions.size());
+        return String.format("Admin: %s (%s) - Active: %s, Changes: %d", 
+                           getFullName(), employeeId, isActive, systemChanges);
     }
 
     @Override
@@ -279,10 +197,8 @@ public class Administrator extends User {
                 ", fullName='" + getFullName() + '\'' +
                 ", employeeId='" + employeeId + '\'' +
                 ", department='" + department + '\'' +
-                ", accessLevel='" + accessLevel + '\'' +
                 ", isActive=" + isActive +
                 ", systemChanges=" + systemChanges +
-                ", permissions=" + permissions.size() +
                 ", username='" + getUsername() + '\'' +
                 '}';
     }
