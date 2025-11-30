@@ -133,13 +133,8 @@ public class CustomerPanel extends JPanel {
             }
         }
 
-        List<Flight> results;
-        if (origin.isEmpty() || destination.isEmpty() || sqlDate == null) {
-            results = flightDAO.getAllFlights();
-        } else {
-            results = flightDAO.searchFlights(origin, destination, sqlDate);
-        }
-
+        // Use flexible search: any provided criteria will be applied
+        List<Flight> results = flightDAO.searchFlightsFlexible(origin, destination, sqlDate);
         populateFlights(results);
     }
 
