@@ -89,8 +89,79 @@ public class ReservationDAO {
         return list;
     }
 
+    // Update reservation status and manage seats accordingly
+    public boolean updateReservationStatus(int reservationId, String newStatus) {
+        String getReservation = "SELECT flight_id, status FROM reservations WHERE reservation_id = ?";
+        String updateRes = "UPDATE reservations SET status = ? WHERE reservation_id = ?";
+        String releaseSeat = "UPDATE flights SET available_seats = available_seats + 1 WHERE flight_id = ?";
+        String decrementSeat = "UPDATE flights SET available_seats = available_seats - 1 WHERE flight_id = ? AND available_seats > 0";
+
+        try {
+            connection.setAutoCommit(false);
+
+            int flightId = -1;
+            String oldStatus = null;
+            try (PreparedStatement stmt = connection.prepareStatement(getReservation)) {
+                stmt.setInt(1, reservationId);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    oldStatus = rs.getString("status");
+                    flightId = rs.getInt("flight_id");
+                } else {
+                    connection.setAutoCommit(true);
+                    return false;
+                }
+            }
+
+            // Update reservation status
+            try (PreparedStatement stmt = connection.prepareStatement(updateRes)) {
+                stmt.setString(1, newStatus);
+                stmt.setInt(2, reservationId);
+                int updated = stmt.executeUpdate();
+                if (updated == 0) {
+                    connection.rollback();
+                    return false;
+                }
+            }
+
+            // Manage seat availability based on status change
+            // If changing from CONFIRMED to CANCELLED, release seat
+            // If changing from CANCELLED to CONFIRMED, decrement seat
+            if ("CONFIRMED".equalsIgnoreCase(oldStatus) && "CANCELLED".equalsIgnoreCase(newStatus)) {
+                try (PreparedStatement stmt = connection.prepareStatement(releaseSeat)) {
+                    stmt.setInt(1, flightId);
+                    stmt.executeUpdate();
+                }
+            } else if ("CANCELLED".equalsIgnoreCase(oldStatus) && "CONFIRMED".equalsIgnoreCase(newStatus)) {
+                try (PreparedStatement stmt = connection.prepareStatement(decrementSeat)) {
+                    stmt.setInt(1, flightId);
+                    int seatsUpdated = stmt.executeUpdate();
+                    if (seatsUpdated == 0) {
+                        connection.rollback();
+                        return false; // No seats available
+                    }
+                }
+            }
+
+            connection.commit();
+            return true;
+        } catch (SQLException e) {
+            try { connection.rollback(); } catch (SQLException ex) { /* ignore */ }
+            System.err.println("Error updating reservation status: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try { connection.setAutoCommit(true); } catch (SQLException ex) { /* ignore */ }
+        }
+        return false;
+    }
+
     // Cancel a reservation and release a seat
     public boolean cancelReservation(int reservationId) {
+        return updateReservationStatus(reservationId, "CANCELLED");
+    }
+
+    // Legacy method - keeping for backwards compatibility
+    private boolean cancelReservationOld(int reservationId) {
         String getFlight = "SELECT flight_id, status FROM reservations WHERE reservation_id = ?";
         String updateRes = "UPDATE reservations SET status = 'CANCELLED' WHERE reservation_id = ?";
         String releaseSeat = "UPDATE flights SET available_seats = available_seats + 1 WHERE flight_id = ?";

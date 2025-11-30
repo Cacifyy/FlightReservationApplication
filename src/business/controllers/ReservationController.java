@@ -25,6 +25,10 @@ public class ReservationController {
         return reservationDAO.cancelReservation(reservationId);
     }
 
+    public boolean updateReservationStatus(int reservationId, String newStatus) {
+        return reservationDAO.updateReservationStatus(reservationId, newStatus);
+    }
+
     public List<ReservationDetail> getAllReservationsWithDetails() {
         return reservationDAO.getAllReservationsWithDetails();
     }
