@@ -32,12 +32,7 @@ public class AgentPanel extends JPanel {
         JLabel header = new JLabel("Agent: " + username);
         header.setFont(new Font("Arial", Font.BOLD, 18));
         header.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-        JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.add(header, BorderLayout.WEST);
-        JButton signOutBtn = new JButton("Sign out");
-        signOutBtn.addActionListener(e -> signOut());
-        headerPanel.add(signOutBtn, BorderLayout.EAST);
-        add(headerPanel, BorderLayout.NORTH);
+        add(header, BorderLayout.NORTH);
 
         JTabbedPane tabs = new JTabbedPane();
 
@@ -70,14 +65,7 @@ public class AgentPanel extends JPanel {
         add(tabs, BorderLayout.CENTER);
     }
 
-    private void signOut() {
-        java.awt.Window w = SwingUtilities.getWindowAncestor(this);
-        if (w != null) w.dispose();
-        SwingUtilities.invokeLater(() -> {
-            LoginFrame login = new LoginFrame();
-            login.setVisible(true);
-        });
-    }
+    // Sign-out handled by MainPanel shell
 
     private void loadData() {
         customersModel.setRowCount(0);

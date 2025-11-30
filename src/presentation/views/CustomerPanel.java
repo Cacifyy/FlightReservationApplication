@@ -4,7 +4,6 @@ import business.controllers.ReservationController;
 import data.dao.FlightDAO;
 import business.entities.flight.Flight;
 import business.entities.booking.Reservation;
-import business.controllers.LoginController;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -45,12 +44,7 @@ public class CustomerPanel extends JPanel {
         JLabel header = new JLabel("Welcome, " + username);
         header.setFont(new Font("Arial", Font.BOLD, 18));
         header.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-        JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.add(header, BorderLayout.WEST);
-        JButton signOutBtn = new JButton("Sign out");
-        signOutBtn.addActionListener(e -> signOut());
-        headerPanel.add(signOutBtn, BorderLayout.EAST);
-        add(headerPanel, BorderLayout.NORTH);
+        add(header, BorderLayout.NORTH);
 
         JTabbedPane tabs = new JTabbedPane();
 
@@ -108,14 +102,7 @@ public class CustomerPanel extends JPanel {
         add(tabs, BorderLayout.CENTER);
     }
 
-    private void signOut() {
-        java.awt.Window w = SwingUtilities.getWindowAncestor(this);
-        if (w != null) w.dispose();
-        SwingUtilities.invokeLater(() -> {
-            LoginFrame login = new LoginFrame();
-            login.setVisible(true);
-        });
-    }
+    // Sign-out handled by MainPanel shell
 
     private void onSearch(ActionEvent e) {
         String origin = originField.getText().trim();

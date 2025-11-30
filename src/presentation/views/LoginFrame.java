@@ -2,7 +2,6 @@ package presentation.views;
 
 import business.controllers.LoginController;
 import data.dao.CustomerDAO;
-import presentation.views.ViewFactory;
 import javax.swing.*;
 import java.awt.*;
 
@@ -159,7 +158,8 @@ public class LoginFrame extends JFrame {
             }
 
             JPanel view = ViewFactory.createView(role, username, customerId);
-            mainFrame.add(view);
+            MainPanel shell = new MainPanel(username, role, view);
+            mainFrame.add(shell);
             mainFrame.setVisible(true);
         });
     }
