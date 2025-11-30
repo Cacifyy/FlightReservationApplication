@@ -1,3 +1,8 @@
+/* File Name: AdminPanel.java
+ * Flight Reservation System - Term Project
+ * Completed by: Ben Cacic, Rowan (Yi-Kai) Chen, Truman (Yao-Chu) Huang, Ryan Lau
+ * Submittion Date: November 30, 2025
+ */
 package presentation.views;
 
 import business.controllers.AdminController;
@@ -9,6 +14,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 
+// Panel for admin operations: manage flights and aircraft
 public class AdminPanel extends JPanel {
     private AdminController adminController;
     private DefaultTableModel flightsModel;
@@ -67,8 +73,6 @@ public class AdminPanel extends JPanel {
         tabs.addTab("Aircraft", acPanel);
         add(tabs, BorderLayout.CENTER);
     }
-
-    // Sign-out handled by MainPanel shell
 
     private void loadData() {
         flightsModel.setRowCount(0);
@@ -162,7 +166,7 @@ public class AdminPanel extends JPanel {
         else JOptionPane.showMessageDialog(this, "Failed to delete aircraft.", "Error", JOptionPane.ERROR_MESSAGE);
     }
 
-    // Simple dialogs for flight and aircraft
+    // Simple dialogs for flight
     private static class FlightDialog {
         private Flight flight;
         FlightDialog(Flight existing) { this.flight = existing == null ? new Flight() : existing; }
@@ -207,6 +211,7 @@ public class AdminPanel extends JPanel {
         }
     }
 
+    // Simple dialogs for aircraft
     private static class AircraftDialog {
         private Aircraft aircraft;
         AircraftDialog(Aircraft existing) { this.aircraft = existing == null ? new Aircraft() : existing; }

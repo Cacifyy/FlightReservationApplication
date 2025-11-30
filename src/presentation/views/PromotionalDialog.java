@@ -1,9 +1,14 @@
+/* File Name: PromotionalDialog.java
+ * Flight Reservation System - Term Project
+ * Completed by: Ben Cacic, Rowan (Yi-Kai) Chen, Truman (Yao-Chu) Huang, Ryan Lau
+ * Submittion Date: November 30, 2025
+ */
 package presentation.views;
 
 import javax.swing.*;
 import java.awt.*;
 
-// Modal dialog that displays monthly promotional news for customers
+// dialog box that displays monthly promotional news for customers
 public class PromotionalDialog extends JDialog {
     private boolean acknowledged = false;
 
@@ -22,10 +27,9 @@ public class PromotionalDialog extends JDialog {
         title.setFont(new Font("Tahoma", Font.BOLD, 18));
         root.add(title, BorderLayout.NORTH);
 
-        // Example promotional content (static). Replace with dynamic content later if desired.
         String html = "<html>"
                 + "<p><b>Double Miles:</b> Earn double loyalty miles on international flights.</p>"
-                + "<p><b>Family Discount:</b> Kids under 12 fly free on domestic flights.</p>"
+                + "<p><b>Family Discount:</b> Kids under 6 fly free on domestic flights.</p>"
                 + "<p><b>Holiday Route:</b> New flight added between Toronto and Calgary.</p>"
                 + "<p></p>"
                 + "<p>Book before January 1st to take advantage of these offers!</p>"
@@ -43,7 +47,6 @@ public class PromotionalDialog extends JDialog {
         JButton ok = new JButton("OK");
         ok.addActionListener(e -> {
             acknowledged = true;
-            // Note: 'dontShow' is not persisted; hook into preferences later if desired.
             setVisible(false);
         });
         bottom.add(dontShow);

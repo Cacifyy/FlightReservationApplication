@@ -1,3 +1,8 @@
+/* File Name: LoginFrame.java
+ * Flight Reservation System - Term Project
+ * Completed by: Ben Cacic, Rowan (Yi-Kai) Chen, Truman (Yao-Chu) Huang, Ryan Lau
+ * Submittion Date: November 30, 2025
+ */
 package presentation.views;
 
 import business.controllers.LoginController;
@@ -102,8 +107,6 @@ public class LoginFrame extends JFrame {
         mainPanel.add(titlePanel, BorderLayout.NORTH);
         mainPanel.add(formPanel, BorderLayout.CENTER);
 
-        // (Test accounts info removed)
-
         add(mainPanel);
 
         // Enter key listener
@@ -157,7 +160,6 @@ public class LoginFrame extends JFrame {
             mainFrame.setSize(900, 600);
             mainFrame.setLocationRelativeTo(null);
 
-            // Determine customer entity if needed
             business.entities.user.Customer customer = null;
             if (user.isCustomer()) {
                 CustomerDAO customerDAO = new CustomerDAO();

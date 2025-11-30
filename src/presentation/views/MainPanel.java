@@ -1,9 +1,14 @@
+/* File Name: MainPanel.java
+ * Flight Reservation System - Term Project
+ * Completed by: Ben Cacic, Rowan (Yi-Kai) Chen, Truman (Yao-Chu) Huang, Ryan Lau
+ * Submittion Date: November 30, 2025
+ */
 package presentation.views;
 
 import javax.swing.*;
 import java.awt.*;
 
-// MainPanel: shell that hosts a header (with sign-out) and a content area for role-specific views
+// MainPanel: Holds header with user info and sign-out, and dynamic content area
 public class MainPanel extends JPanel {
     private JLabel titleLabel;
     private JPanel contentHolder;
@@ -36,6 +41,7 @@ public class MainPanel extends JPanel {
         add(header, BorderLayout.NORTH);
     }
 
+    // Sets the main content area to the given view
     public void setContent(JPanel view) {
         contentHolder.removeAll();
         contentHolder.add(view, BorderLayout.CENTER);

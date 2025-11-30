@@ -1,3 +1,8 @@
+/* File Name: PaymentDialog.java
+ * Flight Reservation System - Term Project
+ * Completed by: Ben Cacic, Rowan (Yi-Kai) Chen, Truman (Yao-Chu) Huang, Ryan Lau
+ * Submittion Date: November 30, 2025
+ */
 package presentation.views;
 
 import business.payment.PaymentDetails;
@@ -8,7 +13,7 @@ import business.payment.CashPaymentStrategy;
 import javax.swing.*;
 import java.awt.*;
 
-// Simple modal dialog to simulate a payment flow (no backend)
+// Simple modal dialog to simulate a payment flow
 public class PaymentDialog extends JDialog {
     private boolean success = false;
     private double amount;

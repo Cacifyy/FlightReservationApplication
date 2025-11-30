@@ -1,3 +1,8 @@
+/* File Name: AgentPanel.java
+ * Flight Reservation System - Term Project
+ * Completed by: Ben Cacic, Rowan (Yi-Kai) Chen, Truman (Yao-Chu) Huang, Ryan Lau
+ * Submittion Date: November 30, 2025
+ */
 package presentation.views;
 
 import business.controllers.CustomerController;
@@ -160,6 +165,7 @@ public class AgentPanel extends JPanel {
         String username; String password; String first; String last; String email; String phone; String address;
     }
 
+    // Show dialog to add/edit customer
     private CustomerDialogResult showCustomerDialog(Customer existing) {
         JTextField usernameField = new JTextField(15);
         JTextField passwordField = new JTextField(15);
@@ -195,6 +201,7 @@ public class AgentPanel extends JPanel {
         int res = JOptionPane.showConfirmDialog(this, p, existing == null ? "Add Customer" : "Edit Customer", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (res != JOptionPane.OK_OPTION) return null;
 
+        // Gather input
         CustomerDialogResult out = new CustomerDialogResult();
         out.username = usernameField.getText().trim();
         out.password = passwordField.getText().trim();

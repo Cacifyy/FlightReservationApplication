@@ -1,3 +1,8 @@
+/* File Name: CustomerDAO.java
+ * Flight Reservation System - Term Project
+ * Completed by: Ben Cacic, Rowan (Yi-Kai) Chen, Truman (Yao-Chu) Huang, Ryan Lau
+ * Submittion Date: November 30, 2025
+ */
 package data.dao;
 
 import data.DatabaseConnection;

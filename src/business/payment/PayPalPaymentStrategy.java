@@ -1,5 +1,11 @@
+/* File Name: PayPalPaymentStrategy.java
+ * Flight Reservation System - Term Project
+ * Completed by: Ben Cacic, Rowan (Yi-Kai) Chen, Truman (Yao-Chu) Huang, Ryan Lau
+ * Submittion Date: November 30, 2025
+ */
 package business.payment;
 
+// Concrete Strategy for PayPal payments
 public class PayPalPaymentStrategy implements PaymentStrategy {
     @Override
     public boolean pay(double amount, PaymentDetails details) {

@@ -1,3 +1,8 @@
+/* File Name: AircraftDAO.java
+ * Flight Reservation System - Term Project
+ * Completed by: Ben Cacic, Rowan (Yi-Kai) Chen, Truman (Yao-Chu) Huang, Ryan Lau
+ * Submittion Date: November 30, 2025
+ */
 package data.dao;
 
 import data.DatabaseConnection;
@@ -7,13 +12,14 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+// Data Access Object for Aircraft operations
 public class AircraftDAO {
     private Connection connection;
 
     public AircraftDAO() {
         this.connection = DatabaseConnection.getInstance().getConnection();
     }
-
+    // CRUD operations for Aircraft
     public List<Aircraft> getAllAircraft() {
         List<Aircraft> list = new ArrayList<>();
         String query = "SELECT * FROM aircraft ORDER BY aircraft_id";
