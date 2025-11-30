@@ -1,6 +1,8 @@
 package presentation.views;
 
 import business.controllers.CustomerController;
+import business.controllers.ReservationController;
+import business.entities.booking.ReservationDetail;
 import data.dao.FlightDAO;
 import business.entities.flight.Flight;
 import business.entities.user.Customer;
@@ -14,14 +16,17 @@ import java.util.List;
 public class AgentPanel extends JPanel {
     private String username;
     private CustomerController customerController;
+    private ReservationController reservationController;
     private FlightDAO flightDAO;
 
     private DefaultTableModel customersModel;
     private DefaultTableModel schedulesModel;
+    private DefaultTableModel reservationsModel;
 
     public AgentPanel(String username) {
         this.username = username;
         this.customerController = new CustomerController();
+        this.reservationController = new ReservationController();
         this.flightDAO = new FlightDAO();
         initComponents();
         loadData();
@@ -60,8 +65,18 @@ public class AgentPanel extends JPanel {
         JScrollPane schedScroll = new JScrollPane(schedTable);
         schedPanel.add(schedScroll, BorderLayout.CENTER);
 
+        // Reservations tab
+        JPanel reservPanel = new JPanel(new BorderLayout());
+        reservationsModel = new DefaultTableModel(new Object[]{"Res ID","Customer","Flight#","Origin","Destination","Departure","Seat","Status","Booked"},0) {
+            public boolean isCellEditable(int row, int column){ return false; }
+        };
+        JTable reservTable = new JTable(reservationsModel);
+        JScrollPane reservScroll = new JScrollPane(reservTable);
+        reservPanel.add(reservScroll, BorderLayout.CENTER);
+
         tabs.addTab("Customers", custPanel);
         tabs.addTab("Schedules", schedPanel);
+        tabs.addTab("Reservations", reservPanel);
         add(tabs, BorderLayout.CENTER);
     }
 
@@ -76,6 +91,25 @@ public class AgentPanel extends JPanel {
         List<Flight> flights = flightDAO.getAllFlights();
         for (Flight f : flights) {
             schedulesModel.addRow(new Object[]{f.getFlightId(), f.getFlightNumber(), f.getOrigin(), f.getDestination(), f.getDepartureTime().toString(), f.getAvailableSeats()});
+        }
+
+        reservationsModel.setRowCount(0);
+        List<ReservationDetail> reservations = reservationController.getAllReservationsWithDetails();
+        for (ReservationDetail rd : reservations) {
+            String customerName = rd.getCustomerFullName().trim();
+            String departure = rd.getDepartureTime() != null ? rd.getDepartureTime().toString() : "";
+            String booked = rd.getBookingDate() != null ? rd.getBookingDate().toString() : "";
+            reservationsModel.addRow(new Object[]{
+                rd.getReservationId(),
+                customerName,
+                rd.getFlightNumber(),
+                rd.getOrigin(),
+                rd.getDestination(),
+                departure,
+                rd.getSeatNumber(),
+                rd.getStatus(),
+                booked
+            });
         }
     }
 
@@ -130,19 +164,23 @@ public class AgentPanel extends JPanel {
         JTextField phoneField = new JTextField(12);
         JTextField addressField = new JTextField(20);
 
+        boolean isEdit = (existing != null);
+        
         if (existing != null) {
             usernameField.setText(existing.getUsername());
             usernameField.setEditable(false);
-            firstField.setText(existing.getFirstName());
-            lastField.setText(existing.getLastName());
-            emailField.setText(existing.getEmail());
-            phoneField.setText(existing.getPhone());
-            addressField.setText(existing.getAddress());
+            firstField.setText(existing.getFirstName() != null ? existing.getFirstName() : "");
+            lastField.setText(existing.getLastName() != null ? existing.getLastName() : "");
+            emailField.setText(existing.getEmail() != null ? existing.getEmail() : "");
+            phoneField.setText(existing.getPhone() != null ? existing.getPhone() : "");
+            addressField.setText(existing.getAddress() != null ? existing.getAddress() : "");
         }
 
         JPanel p = new JPanel(new GridLayout(0,2,6,6));
         p.add(new JLabel("Username:")); p.add(usernameField);
-        p.add(new JLabel("Password:")); p.add(passwordField);
+        if (!isEdit) {
+            p.add(new JLabel("Password:")); p.add(passwordField);
+        }
         p.add(new JLabel("First name:")); p.add(firstField);
         p.add(new JLabel("Last name:")); p.add(lastField);
         p.add(new JLabel("Email:")); p.add(emailField);
@@ -160,6 +198,19 @@ public class AgentPanel extends JPanel {
         out.email = emailField.getText().trim();
         out.phone = phoneField.getText().trim();
         out.address = addressField.getText().trim();
+        
+        // Validate required fields
+        if (out.username.isEmpty() || out.first.isEmpty() || out.last.isEmpty() || out.email.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Username, first name, last name, and email are required.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+        
+        // For new customers, password is required
+        if (!isEdit && out.password.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Password is required for new customers.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+        
         return out;
     }
 }

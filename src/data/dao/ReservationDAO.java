@@ -1,6 +1,7 @@
 package data.dao;
 
 import business.entities.booking.Reservation;
+import business.entities.booking.ReservationDetail;
 import data.DatabaseConnection;
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -139,5 +140,51 @@ public class ReservationDAO {
             try { connection.setAutoCommit(true); } catch (SQLException ex) { /* ignore */ }
         }
         return false;
+    }
+
+    // Get all reservations with customer and flight details (for agents)
+    public List<ReservationDetail> getAllReservationsWithDetails() {
+        List<ReservationDetail> list = new ArrayList<>();
+        String query = "SELECT r.reservation_id, r.customer_id, r.flight_id, r.booking_date, r.status, r.seat_number, " +
+                       "c.first_name, c.last_name, c.email, f.flight_number, f.origin, f.destination, f.departure_time " +
+                       "FROM reservations r " +
+                       "LEFT JOIN customers c ON r.customer_id = c.customer_id " +
+                       "LEFT JOIN flights f ON r.flight_id = f.flight_id " +
+                       "ORDER BY r.booking_date DESC";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                ReservationDetail rd = new ReservationDetail();
+                rd.setReservationId(rs.getInt("reservation_id"));
+                rd.setCustomerId(rs.getInt("customer_id"));
+                rd.setFlightId(rs.getInt("flight_id"));
+                
+                Timestamp bookingTs = rs.getTimestamp("booking_date");
+                if (bookingTs != null) rd.setBookingDate(bookingTs.toLocalDateTime());
+                
+                rd.setStatus(rs.getString("status"));
+                rd.setSeatNumber(rs.getString("seat_number"));
+                
+                // Customer details
+                rd.setCustomerFirstName(rs.getString("first_name"));
+                rd.setCustomerLastName(rs.getString("last_name"));
+                rd.setCustomerEmail(rs.getString("email"));
+                
+                // Flight details
+                rd.setFlightNumber(rs.getString("flight_number"));
+                rd.setOrigin(rs.getString("origin"));
+                rd.setDestination(rs.getString("destination"));
+                
+                Timestamp depTs = rs.getTimestamp("departure_time");
+                if (depTs != null) rd.setDepartureTime(depTs.toLocalDateTime());
+                
+                list.add(rd);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching all reservations: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return list;
     }
 }

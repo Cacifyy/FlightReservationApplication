@@ -2,6 +2,7 @@ package business.controllers;
 
 import data.dao.ReservationDAO;
 import business.entities.booking.Reservation;
+import business.entities.booking.ReservationDetail;
 import java.util.List;
 
 // Controller to mediate reservation actions
@@ -22,5 +23,9 @@ public class ReservationController {
 
     public boolean cancelReservation(int reservationId) {
         return reservationDAO.cancelReservation(reservationId);
+    }
+
+    public List<ReservationDetail> getAllReservationsWithDetails() {
+        return reservationDAO.getAllReservationsWithDetails();
     }
 }
