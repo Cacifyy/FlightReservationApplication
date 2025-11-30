@@ -1,6 +1,7 @@
 package business.controllers;
 
 import data.dao.UserDAO;
+import business.entities.user.User;
 
 // Controller for handling user login operations
 public class LoginController {
@@ -10,8 +11,8 @@ public class LoginController {
         this.userDAO = new UserDAO();
     }
 
-    // Authenticate user
-    public String login(String username, String password) {
+    // Authenticate user and return User entity (or null)
+    public User login(String username, String password) {
         // Validate input
         if (username == null || username.trim().isEmpty()) {
             System.err.println("Username cannot be empty");
@@ -23,16 +24,16 @@ public class LoginController {
             return null;
         }
 
-        // Authenticate through DAO
-        String role = userDAO.authenticateUser(username, password);
+        // Authenticate through DAO and return a User entity
+        User user = userDAO.authenticateUserReturningUser(username, password);
 
-        if (role != null) {
-            System.out.println("Login successful for user: " + username + " (Role: " + role + ")");
+        if (user != null) {
+            System.out.println("Login successful for user: " + username + " (Role: " + user.getRole() + ")");
         } else {
             System.err.println("Login failed for user: " + username);
         }
 
-        return role;
+        return user;
     }
 
     // Get user ID by username

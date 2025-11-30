@@ -28,9 +28,14 @@ public class CustomerPanel extends JPanel {
     private JTable reservationsTable;
     private DefaultTableModel reservationsModel;
 
-    public CustomerPanel(String username, int customerId) {
-        this.username = username;
-        this.customerId = customerId;
+    public CustomerPanel(business.entities.user.Customer customer) {
+        if (customer != null) {
+            this.username = customer.getUsername();
+            this.customerId = customer.getCustomerId();
+        } else {
+            this.username = "Guest";
+            this.customerId = -1;
+        }
         this.flightDAO = new FlightDAO();
         this.reservationController = new ReservationController();
         initComponents();
@@ -102,8 +107,7 @@ public class CustomerPanel extends JPanel {
         add(tabs, BorderLayout.CENTER);
     }
 
-    // Sign-out handled by MainPanel shell
-
+    // Handle search action
     private void onSearch(ActionEvent e) {
         String origin = originField.getText().trim();
         String destination = destinationField.getText().trim();
@@ -120,7 +124,7 @@ public class CustomerPanel extends JPanel {
             }
         }
 
-        // Use flexible search: any provided criteria will be applied
+        // Use flexible search
         List<Flight> results = flightDAO.searchFlightsFlexible(origin, destination, sqlDate);
         populateFlights(results);
     }
@@ -137,6 +141,7 @@ public class CustomerPanel extends JPanel {
         }
     }
 
+    // Handle booking action
     private void onBook() {
         int sel = flightsTable.getSelectedRow();
         if (sel < 0) {
@@ -160,7 +165,7 @@ public class CustomerPanel extends JPanel {
                 amount = Double.parseDouble(priceStr);
             }
         } catch (Exception ex) {
-            // ignore and leave amount 0.0
+            // ignore
         }
 
         // show payment dialog (preview/simulated) — user can select method in dialog
@@ -182,6 +187,7 @@ public class CustomerPanel extends JPanel {
         }
     }
 
+    // Refresh reservations table
     private void refreshReservations() {
         reservationsModel.setRowCount(0);
         if (customerId <= 0) return;
@@ -191,6 +197,7 @@ public class CustomerPanel extends JPanel {
         }
     }
 
+    // Handle cancellation action
     private void onCancel() {
         int sel = reservationsTable.getSelectedRow();
         if (sel < 0) {

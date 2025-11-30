@@ -13,7 +13,7 @@ public class Main {
             e.printStackTrace();
         }
 
-        // Create and display login frame on EDT (Event Dispatch Thread)
+        // Create and display login frame
         SwingUtilities.invokeLater(() -> {
             LoginFrame loginFrame = new LoginFrame();
             loginFrame.setVisible(true);

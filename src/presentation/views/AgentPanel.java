@@ -12,7 +12,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 
-// DB-backed Agent panel for managing customers and viewing schedules
+// Agent panel for managing customers and viewing schedules
 public class AgentPanel extends JPanel {
     private String username;
     private CustomerController customerController;
@@ -84,8 +84,6 @@ public class AgentPanel extends JPanel {
         tabs.addTab("Reservations", reservPanel);
         add(tabs, BorderLayout.CENTER);
     }
-
-    // Sign-out handled by MainPanel shell
 
     private void loadData() {
         customersModel.setRowCount(0);

@@ -36,7 +36,7 @@ public class FlightDAO {
         return flights;
     }
 
-    // Flexible search: any combination of origin, destination, and date (null/empty means ignored)
+    // Flexible search flights (any parameter can be null/empty)
     public List<Flight> searchFlightsFlexible(String origin, String destination, Date date) {
         List<Flight> flights = new ArrayList<>();
         StringBuilder sb = new StringBuilder("SELECT * FROM flights WHERE status = 'SCHEDULED'");

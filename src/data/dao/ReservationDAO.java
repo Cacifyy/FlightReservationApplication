@@ -160,58 +160,6 @@ public class ReservationDAO {
         return updateReservationStatus(reservationId, "CANCELLED");
     }
 
-    // Legacy method - keeping for backwards compatibility
-    private boolean cancelReservationOld(int reservationId) {
-        String getFlight = "SELECT flight_id, status FROM reservations WHERE reservation_id = ?";
-        String updateRes = "UPDATE reservations SET status = 'CANCELLED' WHERE reservation_id = ?";
-        String releaseSeat = "UPDATE flights SET available_seats = available_seats + 1 WHERE flight_id = ?";
-
-        try {
-            connection.setAutoCommit(false);
-
-            int flightId = -1;
-            try (PreparedStatement stmt = connection.prepareStatement(getFlight)) {
-                stmt.setInt(1, reservationId);
-                ResultSet rs = stmt.executeQuery();
-                if (rs.next()) {
-                    String status = rs.getString("status");
-                    if ("CANCELLED".equalsIgnoreCase(status)) {
-                        connection.setAutoCommit(true);
-                        return false;
-                    }
-                    flightId = rs.getInt("flight_id");
-                } else {
-                    connection.setAutoCommit(true);
-                    return false;
-                }
-            }
-
-            try (PreparedStatement stmt = connection.prepareStatement(updateRes)) {
-                stmt.setInt(1, reservationId);
-                int updated = stmt.executeUpdate();
-                if (updated == 0) {
-                    connection.rollback();
-                    return false;
-                }
-            }
-
-            try (PreparedStatement stmt = connection.prepareStatement(releaseSeat)) {
-                stmt.setInt(1, flightId);
-                stmt.executeUpdate();
-            }
-
-            connection.commit();
-            return true;
-        } catch (SQLException e) {
-            try { connection.rollback(); } catch (SQLException ex) { /* ignore */ }
-            System.err.println("Error cancelling reservation: " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            try { connection.setAutoCommit(true); } catch (SQLException ex) { /* ignore */ }
-        }
-        return false;
-    }
-
     // Get all reservations with customer and flight details (for agents)
     public List<ReservationDetail> getAllReservationsWithDetails() {
         List<ReservationDetail> list = new ArrayList<>();

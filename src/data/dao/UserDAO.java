@@ -2,6 +2,7 @@ package data.dao;
 
 import data.DatabaseConnection;
 import java.sql.*;
+import business.entities.user.User;
 
 // Data Access Object for User operations
 public class UserDAO {
@@ -13,7 +14,14 @@ public class UserDAO {
 
     // Authenticate user and return role
     public String authenticateUser(String username, String password) {
-        String query = "SELECT role FROM users WHERE username = ? AND password = ?";
+        // Delegate to authenticateUserReturningUser to avoid duplicate SQL
+        business.entities.user.User u = authenticateUserReturningUser(username, password);
+        return u != null ? u.getRole() : null;
+    }
+
+    // Authenticate and return a full User entity (or null)
+    public User authenticateUserReturningUser(String username, String password) {
+        String query = "SELECT user_id, username, password, role FROM users WHERE username = ? AND password = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, username);
@@ -21,10 +29,15 @@ public class UserDAO {
 
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return rs.getString("role");
+                User u = new User();
+                u.setUserId(rs.getInt("user_id"));
+                u.setUsername(rs.getString("username"));
+                u.setPassword(rs.getString("password"));
+                u.setRole(rs.getString("role"));
+                return u;
             }
         } catch (SQLException e) {
-            System.err.println("Error authenticating user: " + e.getMessage());
+            System.err.println("Error authenticating user (returning entity): " + e.getMessage());
             e.printStackTrace();
         }
         return null;

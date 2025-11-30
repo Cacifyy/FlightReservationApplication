@@ -1,14 +1,18 @@
 package presentation.views;
 
 import javax.swing.*;
+import business.entities.user.User;
+import business.entities.user.Customer;
 
-// Simple factory to create role-specific views
+// Simple factory Design Pattern to create views based on user role
 public class ViewFactory {
-    public static JPanel createView(String role, String username, Integer customerId) {
+    public static JPanel createView(User user, Customer customer) {
+        String role = user != null ? user.getRole() : null;
+        String username = user != null ? user.getUsername() : null;
         if (role == null) role = "";
         switch (role.toUpperCase()) {
             case "CUSTOMER":
-                return new CustomerPanel(username, customerId == null ? -1 : customerId);
+                return new CustomerPanel(customer);
             case "AGENT":
                 return new AgentPanel(username);
             case "ADMIN":

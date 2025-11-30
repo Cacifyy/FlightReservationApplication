@@ -122,21 +122,20 @@ public class LoginFrame extends JFrame {
             return;
         }
 
-        String role = loginController.login(username, password);
+        business.entities.user.User user = loginController.login(username, password);
 
-        if (role != null) {
+        if (user != null) {
             JOptionPane.showMessageDialog(this,
                     "Login successful!\nWelcome, " + username,
                     "Success",
                     JOptionPane.INFORMATION_MESSAGE);
-
             // If customer, show monthly promotions dialog before opening main UI
-            if ("CUSTOMER".equalsIgnoreCase(role)) {
+            if (user.isCustomer()) {
                 PromotionalDialog promo = new PromotionalDialog(this);
                 promo.showDialog();
             }
 
-            openMainFrame(username, role);
+            openMainFrame(user);
             this.dispose();
         } else {
             JOptionPane.showMessageDialog(this,
@@ -147,23 +146,25 @@ public class LoginFrame extends JFrame {
         }
     }
 
-    private void openMainFrame(String username, String role) {
+    private void openMainFrame(business.entities.user.User user) {
         SwingUtilities.invokeLater(() -> {
+            String username = user.getUsername();
+            String role = user.getRole();
+
             // Create a simple main window that hosts role-specific views produced by the ViewFactory
             JFrame mainFrame = new JFrame("Flight Reservation - " + username + " (" + role + ")");
             mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             mainFrame.setSize(900, 600);
             mainFrame.setLocationRelativeTo(null);
 
-            // Determine customer id if needed
-            Integer customerId = null;
-            if ("CUSTOMER".equalsIgnoreCase(role)) {
+            // Determine customer entity if needed
+            business.entities.user.Customer customer = null;
+            if (user.isCustomer()) {
                 CustomerDAO customerDAO = new CustomerDAO();
-                int userId = loginController.getUserId(username);
-                customerId = customerDAO.getCustomerIdByUserId(userId);
+                customer = customerDAO.getCustomerByUserId(user.getUserId());
             }
 
-            JPanel view = ViewFactory.createView(role, username, customerId);
+            JPanel view = ViewFactory.createView(user, customer);
             MainPanel shell = new MainPanel(username, role, view);
             mainFrame.add(shell);
             mainFrame.setVisible(true);

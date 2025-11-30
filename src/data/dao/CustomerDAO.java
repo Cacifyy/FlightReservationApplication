@@ -99,6 +99,31 @@ public class CustomerDAO {
         return null;
     }
 
+    // Get customer by user_id (returns full Customer entity)
+    public Customer getCustomerByUserId(int userId) {
+        String query = "SELECT c.customer_id, c.user_id, u.username, c.first_name, c.last_name, c.email, c.phone, c.address FROM customers c LEFT JOIN users u ON c.user_id = u.user_id WHERE c.user_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Customer c = new Customer();
+                c.setCustomerId(rs.getInt("customer_id"));
+                c.setUserId(rs.getInt("user_id"));
+                c.setUsername(rs.getString("username"));
+                c.setFirstName(rs.getString("first_name"));
+                c.setLastName(rs.getString("last_name"));
+                c.setEmail(rs.getString("email"));
+                c.setPhone(rs.getString("phone"));
+                c.setAddress(rs.getString("address"));
+                return c;
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching customer by user id: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     // Get all customers
     public List<Customer> getAllCustomers() {
         List<Customer> list = new ArrayList<>();
