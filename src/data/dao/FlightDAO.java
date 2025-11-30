@@ -36,6 +36,46 @@ public class FlightDAO {
         return flights;
     }
 
+    // Flexible search: any combination of origin, destination, and date (null/empty means ignored)
+    public List<Flight> searchFlightsFlexible(String origin, String destination, Date date) {
+        List<Flight> flights = new ArrayList<>();
+        StringBuilder sb = new StringBuilder("SELECT * FROM flights WHERE status = 'SCHEDULED'");
+        List<Object> params = new ArrayList<>();
+
+        if (origin != null && !origin.trim().isEmpty()) {
+            sb.append(" AND origin = ?");
+            params.add(origin.trim());
+        }
+        if (destination != null && !destination.trim().isEmpty()) {
+            sb.append(" AND destination = ?");
+            params.add(destination.trim());
+        }
+        if (date != null) {
+            sb.append(" AND DATE(departure_time) = ?");
+            params.add(date);
+        }
+
+        sb.append(" ORDER BY departure_time");
+
+        try (PreparedStatement stmt = connection.prepareStatement(sb.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                Object p = params.get(i);
+                if (p instanceof Date) stmt.setDate(i + 1, (Date) p);
+                else stmt.setString(i + 1, p.toString());
+            }
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                flights.add(extractFlightFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error searching flights (flexible): " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return flights;
+    }
+
     // Get all flights
     public List<Flight> getAllFlights() {
         List<Flight> flights = new ArrayList<>();

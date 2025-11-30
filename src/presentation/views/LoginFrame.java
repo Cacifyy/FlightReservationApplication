@@ -1,6 +1,7 @@
 package presentation.views;
 
 import business.controllers.LoginController;
+import data.dao.CustomerDAO;
 import javax.swing.*;
 import java.awt.*;
 
@@ -79,7 +80,7 @@ public class LoginFrame extends JFrame {
         loginButton.setFont(new Font("Arial", Font.BOLD, 14));
         loginButton.setPreferredSize(new Dimension(100, 35));
         loginButton.setBackground(new Color(70, 130, 180));
-        loginButton.setForeground(Color.WHITE);
+        loginButton.setForeground(Color.BLACK);
         loginButton.addActionListener(e -> handleLogin());
 
         exitButton = new JButton("Exit");
@@ -101,14 +102,7 @@ public class LoginFrame extends JFrame {
         mainPanel.add(titlePanel, BorderLayout.NORTH);
         mainPanel.add(formPanel, BorderLayout.CENTER);
 
-        // Info panel
-        JPanel infoPanel = new JPanel();
-        infoPanel.setBackground(new Color(240, 248, 255));
-        JLabel infoLabel = new JLabel("Test accounts: admin/admin123, john_doe/customer123");
-        infoLabel.setFont(new Font("Arial", Font.ITALIC, 11));
-        infoLabel.setForeground(Color.GRAY);
-        infoPanel.add(infoLabel);
-        mainPanel.add(infoPanel, BorderLayout.SOUTH);
+        // (Test accounts info removed)
 
         add(mainPanel);
 
@@ -136,8 +130,8 @@ public class LoginFrame extends JFrame {
                     "Success",
                     JOptionPane.INFORMATION_MESSAGE);
 
-            this.dispose();
             openMainFrame(username, role);
+            this.dispose();
         } else {
             JOptionPane.showMessageDialog(this,
                     "Invalid username or password.\nPlease try again.",
@@ -148,9 +142,25 @@ public class LoginFrame extends JFrame {
     }
 
     private void openMainFrame(String username, String role) {
-        // SwingUtilities.invokeLater(() -> {
-        // MainFrame mainFrame = new MainFrame(username, role);
-        // mainFrame.setVisible(true);
-        // });
+        SwingUtilities.invokeLater(() -> {
+            // Create a simple main window that hosts role-specific views produced by the ViewFactory
+            JFrame mainFrame = new JFrame("Flight Reservation - " + username + " (" + role + ")");
+            mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            mainFrame.setSize(900, 600);
+            mainFrame.setLocationRelativeTo(null);
+
+            // Determine customer id if needed
+            Integer customerId = null;
+            if ("CUSTOMER".equalsIgnoreCase(role)) {
+                CustomerDAO customerDAO = new CustomerDAO();
+                int userId = loginController.getUserId(username);
+                customerId = customerDAO.getCustomerIdByUserId(userId);
+            }
+
+            JPanel view = ViewFactory.createView(role, username, customerId);
+            MainPanel shell = new MainPanel(username, role, view);
+            mainFrame.add(shell);
+            mainFrame.setVisible(true);
+        });
     }
 }

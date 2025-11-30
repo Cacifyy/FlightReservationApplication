@@ -65,6 +65,27 @@ public class UserDAO {
         }
     }
 
+    // Create new user and return generated user_id, or -1 on failure
+    public int createUserReturningId(String username, String password, String role) {
+        String query = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, username);
+            stmt.setString(2, password);
+            stmt.setString(3, role);
+            int affected = stmt.executeUpdate();
+            if (affected == 0) return -1;
+            try (ResultSet keys = stmt.getGeneratedKeys()) {
+                if (keys.next()) {
+                    return keys.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error creating user (with id): " + e.getMessage());
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
     // Check if username exists
     public boolean usernameExists(String username) {
         String query = "SELECT COUNT(*) FROM users WHERE username = ?";
