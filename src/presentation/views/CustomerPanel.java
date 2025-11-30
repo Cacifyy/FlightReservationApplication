@@ -163,7 +163,7 @@ public class CustomerPanel extends JPanel {
             // ignore and leave amount 0.0
         }
 
-        // show payment dialog (preview/simulated)
+        // show payment dialog (preview/simulated) — user can select method in dialog
         PaymentDialog pay = new PaymentDialog(SwingUtilities.getWindowAncestor(this), amount);
         boolean paid = pay.showDialog();
         if (!paid) {
