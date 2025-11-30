@@ -68,6 +68,8 @@ public class AdminPanel extends JPanel {
         add(tabs, BorderLayout.CENTER);
     }
 
+    // Sign-out handled by MainPanel shell
+
     private void loadData() {
         flightsModel.setRowCount(0);
         List<Flight> flights = adminController.getAllFlights();

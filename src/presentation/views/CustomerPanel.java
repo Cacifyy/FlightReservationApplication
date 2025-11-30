@@ -4,7 +4,6 @@ import business.controllers.ReservationController;
 import data.dao.FlightDAO;
 import business.entities.flight.Flight;
 import business.entities.booking.Reservation;
-import business.controllers.LoginController;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -103,6 +102,8 @@ public class CustomerPanel extends JPanel {
         add(tabs, BorderLayout.CENTER);
     }
 
+    // Sign-out handled by MainPanel shell
+
     private void onSearch(ActionEvent e) {
         String origin = originField.getText().trim();
         String destination = destinationField.getText().trim();
@@ -119,13 +120,8 @@ public class CustomerPanel extends JPanel {
             }
         }
 
-        List<Flight> results;
-        if (origin.isEmpty() || destination.isEmpty() || sqlDate == null) {
-            results = flightDAO.getAllFlights();
-        } else {
-            results = flightDAO.searchFlights(origin, destination, sqlDate);
-        }
-
+        // Use flexible search: any provided criteria will be applied
+        List<Flight> results = flightDAO.searchFlightsFlexible(origin, destination, sqlDate);
         populateFlights(results);
     }
 
@@ -151,8 +147,30 @@ public class CustomerPanel extends JPanel {
             JOptionPane.showMessageDialog(this, "Customer record not found. Cannot book.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
         int flightId = (int) flightsModel.getValueAt(sel, 0);
+        // attempt to get flight price for payment amount
+        double amount = 0.0;
+        try {
+            business.entities.flight.Flight f = flightDAO.getFlightById(flightId);
+            if (f != null) amount = f.getPrice();
+            else {
+                // fallback: parse price column which is formatted like "$123.45"
+                String priceStr = (String) flightsModel.getValueAt(sel, 5);
+                priceStr = priceStr.replaceAll("[^0-9.\\-]", "");
+                amount = Double.parseDouble(priceStr);
+            }
+        } catch (Exception ex) {
+            // ignore and leave amount 0.0
+        }
+
+        // show payment dialog (preview/simulated)
+        PaymentDialog pay = new PaymentDialog(SwingUtilities.getWindowAncestor(this), amount);
+        boolean paid = pay.showDialog();
+        if (!paid) {
+            JOptionPane.showMessageDialog(this, "Payment was cancelled. Booking not completed.", "Payment Cancelled", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
         String seat = "AUTO";
         int resId = reservationController.createReservation(customerId, flightId, seat);
         if (resId > 0) {

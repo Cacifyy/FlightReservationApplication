@@ -10,7 +10,6 @@ public class ViewFactory {
             case "CUSTOMER":
                 return new CustomerPanel(username, customerId == null ? -1 : customerId);
             case "AGENT":
-            case "FLIGHT_AGENT":
                 return new AgentPanel(username);
             case "ADMIN":
                 return new AdminPanel();

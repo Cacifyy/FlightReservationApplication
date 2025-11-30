@@ -80,6 +80,8 @@ public class AgentPanel extends JPanel {
         add(tabs, BorderLayout.CENTER);
     }
 
+    // Sign-out handled by MainPanel shell
+
     private void loadData() {
         customersModel.setRowCount(0);
         List<Customer> list = customerController.getAllCustomers();

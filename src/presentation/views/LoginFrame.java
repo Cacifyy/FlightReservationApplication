@@ -2,7 +2,6 @@ package presentation.views;
 
 import business.controllers.LoginController;
 import data.dao.CustomerDAO;
-import presentation.views.ViewFactory;
 import javax.swing.*;
 import java.awt.*;
 
@@ -81,7 +80,7 @@ public class LoginFrame extends JFrame {
         loginButton.setFont(new Font("Arial", Font.BOLD, 14));
         loginButton.setPreferredSize(new Dimension(100, 35));
         loginButton.setBackground(new Color(70, 130, 180));
-        loginButton.setForeground(Color.WHITE);
+        loginButton.setForeground(Color.BLACK);
         loginButton.addActionListener(e -> handleLogin());
 
         exitButton = new JButton("Exit");
@@ -103,14 +102,7 @@ public class LoginFrame extends JFrame {
         mainPanel.add(titlePanel, BorderLayout.NORTH);
         mainPanel.add(formPanel, BorderLayout.CENTER);
 
-        // Info panel
-        JPanel infoPanel = new JPanel();
-        infoPanel.setBackground(new Color(240, 248, 255));
-        JLabel infoLabel = new JLabel("Test accounts: admin/admin123, john_doe/customer123");
-        infoLabel.setFont(new Font("Arial", Font.ITALIC, 11));
-        infoLabel.setForeground(Color.GRAY);
-        infoPanel.add(infoLabel);
-        mainPanel.add(infoPanel, BorderLayout.SOUTH);
+        // (Test accounts info removed)
 
         add(mainPanel);
 
@@ -166,7 +158,8 @@ public class LoginFrame extends JFrame {
             }
 
             JPanel view = ViewFactory.createView(role, username, customerId);
-            mainFrame.add(view);
+            MainPanel shell = new MainPanel(username, role, view);
+            mainFrame.add(shell);
             mainFrame.setVisible(true);
         });
     }
