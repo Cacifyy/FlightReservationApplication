@@ -19,14 +19,12 @@ public class Administrator extends User {
     private String department;
     private boolean isActive;
     private LocalDateTime lastLogin;
-    private int systemChanges;
 
     // Constructors
     public Administrator() {
         super();
         this.setRole("ADMIN");
         this.isActive = true;
-        this.systemChanges = 0;
     }
 
     public Administrator(String username, String password, String firstName, String lastName, 
@@ -39,7 +37,6 @@ public class Administrator extends User {
         this.hireDate = LocalDateTime.now();
         this.department = "IT Administration";
         this.isActive = true;
-        this.systemChanges = 0;
     }
 
     public Administrator(int userId, String username, String password, int adminId,
@@ -55,7 +52,6 @@ public class Administrator extends User {
         this.hireDate = hireDate;
         this.department = department;
         this.isActive = true;
-        this.systemChanges = 0;
     }
 
 
@@ -143,14 +139,6 @@ public class Administrator extends User {
         this.lastLogin = lastLogin;
     }
 
-    public int getSystemChanges() {
-        return systemChanges;
-    }
-
-    public void setSystemChanges(int systemChanges) {
-        this.systemChanges = systemChanges;
-    }
-
     // Business methods
     public String getFullName() {
         return firstName + " " + lastName;
@@ -162,10 +150,6 @@ public class Administrator extends User {
 
     public void recordLogin() {
         this.lastLogin = LocalDateTime.now();
-    }
-
-    public void incrementSystemChanges() {
-        this.systemChanges++;
     }
 
     public boolean isRecentlyActive() {
@@ -186,8 +170,8 @@ public class Administrator extends User {
     }
 
     public String getAdminSummary() {
-        return String.format("Admin: %s (%s) - Active: %s, Changes: %d", 
-                           getFullName(), employeeId, isActive, systemChanges);
+        return String.format("Admin: %s (%s) - Active: %s", 
+                           getFullName(), employeeId, isActive);
     }
 
     @Override
@@ -198,7 +182,6 @@ public class Administrator extends User {
                 ", employeeId='" + employeeId + '\'' +
                 ", department='" + department + '\'' +
                 ", isActive=" + isActive +
-                ", systemChanges=" + systemChanges +
                 ", username='" + getUsername() + '\'' +
                 '}';
     }
