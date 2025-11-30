@@ -72,7 +72,12 @@ public class AgentPanel extends JPanel {
         };
         JTable reservTable = new JTable(reservationsModel);
         JScrollPane reservScroll = new JScrollPane(reservTable);
+        JPanel reservButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton changeStatusBtn = new JButton("Change Status");
+        changeStatusBtn.addActionListener(e -> onChangeReservationStatus(reservTable));
+        reservButtons.add(changeStatusBtn);
         reservPanel.add(reservScroll, BorderLayout.CENTER);
+        reservPanel.add(reservButtons, BorderLayout.SOUTH);
 
         tabs.addTab("Customers", custPanel);
         tabs.addTab("Schedules", schedPanel);
@@ -214,5 +219,42 @@ public class AgentPanel extends JPanel {
         }
         
         return out;
+    }
+
+    private void onChangeReservationStatus(JTable table) {
+        int sel = table.getSelectedRow();
+        if (sel < 0) {
+            JOptionPane.showMessageDialog(this, "Please select a reservation to change status.", "No Selection", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        int reservationId = (int) reservationsModel.getValueAt(sel, 0);
+        String currentStatus = (String) reservationsModel.getValueAt(sel, 7);
+        String customerName = (String) reservationsModel.getValueAt(sel, 1);
+        String flightNumber = (String) reservationsModel.getValueAt(sel, 2);
+        
+        // Show status selection dialog
+        String[] statusOptions = {"CONFIRMED", "CANCELLED", "PENDING"};
+        String selectedStatus = (String) JOptionPane.showInputDialog(
+            this,
+            "Change status for reservation (" + customerName + " - Flight " + flightNumber + ")\nCurrent status: " + currentStatus,
+            "Change Reservation Status",
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            statusOptions,
+            currentStatus
+        );
+        
+        if (selectedStatus == null || selectedStatus.equals(currentStatus)) {
+            return; // User cancelled or selected same status
+        }
+        
+        boolean success = reservationController.updateReservationStatus(reservationId, selectedStatus);
+        if (success) {
+            JOptionPane.showMessageDialog(this, "Reservation status updated to " + selectedStatus + ".", "Success", JOptionPane.INFORMATION_MESSAGE);
+            loadData(); // Refresh the table
+        } else {
+            JOptionPane.showMessageDialog(this, "Failed to update reservation status. Check if seats are available.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
