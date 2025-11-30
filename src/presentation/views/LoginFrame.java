@@ -130,6 +130,12 @@ public class LoginFrame extends JFrame {
                     "Success",
                     JOptionPane.INFORMATION_MESSAGE);
 
+            // If customer, show monthly promotions dialog before opening main UI
+            if ("CUSTOMER".equalsIgnoreCase(role)) {
+                PromotionalDialog promo = new PromotionalDialog(this);
+                promo.showDialog();
+            }
+
             openMainFrame(username, role);
             this.dispose();
         } else {
