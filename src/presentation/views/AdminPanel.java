@@ -169,6 +169,7 @@ public class AdminPanel extends JPanel {
             JTextField origin = new JTextField(flight.getOrigin() == null ? "" : flight.getOrigin(), 10);
             JTextField dest = new JTextField(flight.getDestination() == null ? "" : flight.getDestination(), 10);
             JTextField dep = new JTextField(flight.getDepartureTime() == null ? "2025-12-01T08:00" : flight.getDepartureTime().toString(), 18);
+            JTextField arr = new JTextField(flight.getArrivalTime() == null ? "2025-12-01T10:00" : flight.getArrivalTime().toString(), 18);
             JTextField price = new JTextField(String.valueOf(flight.getPrice()), 8);
             JTextField seats = new JTextField(String.valueOf(flight.getAvailableSeats()), 6);
             JTextField acId = new JTextField(String.valueOf(flight.getAircraftId()), 6);
@@ -178,6 +179,7 @@ public class AdminPanel extends JPanel {
             p.add(new JLabel("Origin:")); p.add(origin);
             p.add(new JLabel("Destination:")); p.add(dest);
             p.add(new JLabel("Departure (YYYY-MM-DDTHH:MM):")); p.add(dep);
+            p.add(new JLabel("Arrival (YYYY-MM-DDTHH:MM):")); p.add(arr);
             p.add(new JLabel("Price:")); p.add(price);
             p.add(new JLabel("Seats:")); p.add(seats);
             p.add(new JLabel("Aircraft ID:")); p.add(acId);
@@ -190,9 +192,11 @@ public class AdminPanel extends JPanel {
                 flight.setOrigin(origin.getText().trim());
                 flight.setDestination(dest.getText().trim());
                 flight.setDepartureTime(java.time.LocalDateTime.parse(dep.getText().trim()));
+                flight.setArrivalTime(java.time.LocalDateTime.parse(arr.getText().trim()));
                 flight.setPrice(Double.parseDouble(price.getText().trim()));
                 flight.setAvailableSeats(Integer.parseInt(seats.getText().trim()));
                 flight.setAircraftId(Integer.parseInt(acId.getText().trim()));
+                flight.setStatus("SCHEDULED");
                 return flight;
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, "Invalid input: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

@@ -138,8 +138,8 @@ public class LoginFrame extends JFrame {
                     "Success",
                     JOptionPane.INFORMATION_MESSAGE);
 
-            this.dispose();
             openMainFrame(username, role);
+            this.dispose();
         } else {
             JOptionPane.showMessageDialog(this,
                     "Invalid username or password.\nPlease try again.",
